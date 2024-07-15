@@ -1,6 +1,6 @@
 # CatBoost Time Step Classifier in Scikit-learn
 
-CatBoost Time Step Classifcation Model in Scikit-learn as per Ready Tensor specifications.
+CatBoost Time Step Classification Model in Scikit-learn as per Ready Tensor specifications.
 
 ## Project Description
 
@@ -17,7 +17,7 @@ The following are the requirements for using your data with this model:
 
 Here are the highlights of this implementation: <br/>
 
-- A **CatBoost Time Step Classifcation n** model built using **Scikit-learn**
+- A **CatBoost Time Step Classification n** model built using **Scikit-learn**
   Additionally, the implementation contains the following features:
 - **Data Validation**: Pydantic data validation is used for the schema, training and test files, as well as the inference request data.
 - **Error handling and logging**: Python's logging module is used for logging and key functions include exception handling.
@@ -35,7 +35,7 @@ The following is the directory structure of the project:
   - **`config/`**: for configuration files for data preprocessing, model hyperparameters, paths, etc.
   - **`data_models/`**: for data models for input validation including the schema, training and test files. It also contains the data model for the batch prediction results.
   - **`schema/`**: for schema handler script. This script contains the class that provides helper getters/methods for the data schema.
-  - **`prediction/`**: Scripts for the TS annotation model.
+  - **`prediction/`**: Scripts for the TS Classifier model.
   - **`logger.py`**: This script contains the logger configuration using **logging** module.
   - **`train.py`**: This script is used to train the model. It loads the data, preprocesses it, trains the model, and saves the artifacts in the path `./model_inputs_outputs/model/artifacts/`.
   - **`predict.py`**: This script is used to run batch predictions using the trained model. It loads the artifacts and creates and saves the predictions in a file called `predictions.csv` in the path `./model_inputs_outputs/outputs/predictions/`.
@@ -63,7 +63,7 @@ In this section we cover the following:
 
 - Create your virtual environment and install dependencies listed in `requirements.txt` which is inside the `root` directory.
 - Move the three example files (`hmm_continuous_schema.json`, `hmm_continuous_train.csv` and `hmm_continuous_test.csv`) in the `examples` directory into the `./model_inputs_outputs/inputs/schema`, `./model_inputs_outputs/inputs/data/training` and `./model_inputs_outputs/inputs/data/testing` folders, respectively (or alternatively, place your custom dataset files in the same locations).
-- Run the script `src/train.py` to train the Timeseries Annotation model. This will save the model artifacts, including the preprocessing pipeline and label encoder, in the path `./model_inputs_outputs/model/artifacts/`.
+- Run the script `src/train.py` to train the Timeseries Classifier model. This will save the model artifacts, including the preprocessing pipeline and label encoder, in the path `./model_inputs_outputs/model/artifacts/`.
 - Run the script `src/predict.py` to run batch predictions using the trained model. This script will load the artifacts and create and save the predictions in a file called `predictions.csv` in the path `./model_inputs_outputs/outputs/predictions/`.
 
 ### To run with Docker
