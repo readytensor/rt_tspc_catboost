@@ -1,4 +1,5 @@
 import os
+import tempfile
 import warnings
 
 import joblib
@@ -67,13 +68,15 @@ class TimeStepClassifier:
 
     def build_model(self) -> CatBoostClassifier:
         """Build a new CatBoost Classifier."""
-        model = CatBoostClassifier(
-            learning_rate=self.learning_rate,
-            iterations=self.iterations,
-            depth=self.depth,
-            l2_leaf_reg=self.l2_leaf_reg,
-            **self.kwargs,
-        )
+        with tempfile.TemporaryDirectory() as tempdir:
+            model = CatBoostClassifier(
+                learning_rate=self.learning_rate,
+                iterations=self.iterations,
+                depth=self.depth,
+                l2_leaf_reg=self.l2_leaf_reg,
+                train_dir=tempdir,
+                **self.kwargs,
+            )
         return MultiOutputClassifier(model)
 
     def _get_X_and_y(
@@ -108,7 +111,7 @@ class TimeStepClassifier:
 
     def fit(self, train_data):
         train_X, train_y = self._get_X_and_y(train_data, is_train=True)
-        self.model.fit(train_X, train_y)
+        self.model.fit(train_X, train_y, silent=True)
         self._is_trained = True
         return self.model
 
