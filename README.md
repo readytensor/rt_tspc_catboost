@@ -1,6 +1,6 @@
-# CatBoost Time Step Classifier in Scikit-learn
+# CatBoost Time Step Classifier
 
-CatBoost Time Step Classification Model in Scikit-learn as per Ready Tensor specifications.
+CatBoost Time Step Classification Model as per Ready Tensor specifications.
 
 ## Project Description
 
@@ -17,7 +17,7 @@ The following are the requirements for using your data with this model:
 
 Here are the highlights of this implementation: <br/>
 
-- A **CatBoost Time Step Classification n** model built using **Scikit-learn**
+- A **CatBoost Time Step Classification** model
   Additionally, the implementation contains the following features:
 - **Data Validation**: Pydantic data validation is used for the schema, training and test files, as well as the inference request data.
 - **Error handling and logging**: Python's logging module is used for logging and key functions include exception handling.
