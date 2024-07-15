@@ -8,8 +8,7 @@ from sklearn.multioutput import MultiOutputClassifier
 from sklearn.exceptions import NotFittedError
 from multiprocessing import cpu_count
 from sklearn.metrics import f1_score
-from schema.data_schema import TSAnnotationSchema
-from preprocessing.custom_transformers import PADDING_VALUE
+from schema.data_schema import TimeStepClassificationSchema
 from typing import Optional, Tuple
 
 warnings.filterwarnings("ignore")
@@ -33,8 +32,9 @@ class TSAnnotator:
 
     def __init__(
         self,
-        data_schema: TSAnnotationSchema,
+        data_schema: TimeStepClassificationSchema,
         encode_len: int,
+        padding_value: float ,
         learning_rate: Optional[float] = 1e-1,
         iterations: Optional[int] = 100,
         depth: Optional[int] = 6,
@@ -45,8 +45,9 @@ class TSAnnotator:
         Construct a new CatBoost TSAnnotator.
 
         Args:
-            data_schema (TSAnnotationSchema): The data schema.
+            data_schema (TimeStepClassificationSchema): The data schema.
             encode_len (int): Encoding (history) length.
+            padding_value (float): Padding value.
             learning_rate (float): Learning rate.
             iterations (int): Number of iterations.
             depth (int): Depth of the tree.
@@ -55,6 +56,7 @@ class TSAnnotator:
         """
         self.data_schema = data_schema
         self.encode_len = int(encode_len)
+        self.padding_value = padding_value
         self.learning_rate = float(learning_rate)
         self.iterations = int(iterations)
         self.depth = int(depth)
@@ -113,9 +115,6 @@ class TSAnnotator:
     def predict(self, data):
         X, window_ids = self._get_X_and_y(data, is_train=False)
         preds = self.model.predict_proba(X)
-        for i in range(len(preds)):
-            if preds[i].shape[0] > len(self.data_schema.target_classes):
-                preds[i] = preds[i][:-1]
         preds = np.array(preds)
         preds = preds.transpose(1, 0, 2)
 
@@ -131,11 +130,11 @@ class TSAnnotator:
         prob_dict = {
             k: np.mean(np.array(v), axis=0)
             for k, v in prob_dict.items()
-            if k[1] != PADDING_VALUE
+            if k[1] != self.padding_value
         }
 
         sorted_dict = {key: prob_dict[key] for key in sorted(prob_dict.keys())}
-        probabilities = np.vstack(sorted_dict.values())
+        probabilities = np.vstack(list(sorted_dict.values()))
         return probabilities
 
     def evaluate(self, test_data):
@@ -174,21 +173,25 @@ class TSAnnotator:
 
 def train_predictor_model(
     train_data: np.ndarray,
-    data_schema: TSAnnotationSchema,
+    data_schema: TimeStepClassificationSchema,
     hyperparameters: dict,
+    padding_value: float,
 ) -> TSAnnotator:
     """
     Instantiate and train the TSAnnotator model.
 
     Args:
         train_data (np.ndarray): The train split from training data.
-        hyperparameters (dict): Hyperparameters for the TSAnnotator.
+        data_schema (TimeStepClassificationSchema): The data schema.
+        hyperparameters (dict): Hyperparameters for the TimeStepClassifier.
+        padding_value (float): The padding value.
 
     Returns:
         'TSAnnotator': The TSAnnotator model
     """
     model = TSAnnotator(
         data_schema=data_schema,
+        padding_value=padding_value,
         **hyperparameters,
     )
     model.fit(train_data=train_data)
